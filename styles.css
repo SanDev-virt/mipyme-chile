@@ -1,0 +1,296 @@
+/* ============================================================
+   MiPyme Chile - Hoja de estilos v2
+   ============================================================ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+body {
+  background: #f0f4f8;
+  color: #1e293b;
+  padding-bottom: 80px;
+}
+
+/* ---------- HEADER ---------- */
+header {
+  background: linear-gradient(135deg, #0039a6 0%, #d52b1e 100%);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+header h1 { font-size: 1.6rem; }
+
+header p {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+
+/* ---------- CONTENEDOR ---------- */
+.container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 0 16px;
+}
+
+/* ---------- TARJETAS DE RESUMEN ---------- */
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-left: 5px solid #0039a6;
+}
+
+.card.verde    { border-left-color: #16a34a; }
+.card.rojo     { border-left-color: #dc2626; }
+.card.amarillo { border-left-color: #f59e0b; }
+
+.card .label {
+  font-size: 0.8rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card .valor {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.card .ayuda {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+/* ---------- ESTADO EMOCIONAL ---------- */
+.estado {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.estado .emoji { font-size: 3rem; }
+
+.estado .mensaje {
+  font-size: 1.1rem;
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+/* ---------- PESTAÑAS ---------- */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tab {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.tab.active {
+  background: #0039a6;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 57, 166, 0.3);
+}
+
+.tab.venta.active {
+  background: #16a34a;
+}
+
+/* ---------- FORMULARIOS ---------- */
+.formulario {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
+.formulario h3 {
+  margin-bottom: 16px;
+  color: #0039a6;
+}
+
+.campo { margin-bottom: 14px; }
+
+.campo label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.campo input,
+.campo select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border 0.2s;
+  background: white;
+}
+
+.campo input:focus,
+.campo select:focus {
+  outline: none;
+  border-color: #0039a6;
+}
+
+.ayuda {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* ---------- BOTONES ---------- */
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s;
+  color: white;
+}
+
+.btn:active { transform: scale(0.98); }
+
+.btn-venta  { background: #16a34a; }
+.btn-compra { background: #dc2626; }
+
+.btn-secundario {
+  background: #64748b;
+  font-size: 0.85rem;
+  padding: 10px;
+}
+
+/* ---------- LISTA DE MOVIMIENTOS ---------- */
+.lista {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.lista h3 {
+  margin-bottom: 14px;
+  color: #0039a6;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #f1f5f9;
+  gap: 8px;
+}
+
+.item:last-child { border-bottom: none; }
+
+.item .info { flex: 1; }
+
+.item .info .titulo {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.item .info .fecha {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.item .monto {
+  font-weight: 700;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.item .monto.positivo { color: #16a34a; }
+.item .monto.negativo { color: #dc2626; }
+
+.item .eliminar {
+  background: none;
+  border: none;
+  color: #cbd5e1;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 4px 8px;
+}
+
+.item .eliminar:hover { color: #dc2626; }
+
+.vacio {
+  text-align: center;
+  color: #94a3b8;
+  padding: 30px;
+  font-size: 0.9rem;
+}
+
+/* ---------- BOTONES INFERIORES FIJOS ---------- */
+.footer-acciones {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 12px;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  gap: 8px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ---------- TOAST (notificaciones) ---------- */
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: #1e293b;
+  color: white;
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  z-index: 1000;
+  transition: transform 0.3s;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.toast.visible { transform: translateX(-50%) translateY(0); }
+
+.toast.exito { background: #16a34a; }
+.toast.error { background: #dc2626; }

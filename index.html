@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiPyme Chile - Compras y Ventas fácil</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header>
+    <h1>🇨🇱 MiPyme Chile</h1>
+    <p>Registra tus compras y ventas sin saber contabilidad</p>
+  </header>
+
+  <div class="container">
+
+    <!-- RESUMEN -->
+    <div class="resumen">
+      <div class="card verde">
+        <div class="label">💰 Ventas del mes</div>
+        <div class="valor" id="totalVentas">$0</div>
+      </div>
+      <div class="card rojo">
+        <div class="label">🛒 Mercadería comprada</div>
+        <div class="valor" id="totalCompras">$0</div>
+      </div>
+      <div class="card rojo">
+        <div class="label">💡 Gastos del mes</div>
+        <div class="valor" id="totalGastos">$0</div>
+      </div>
+      <div class="card amarillo">
+        <div class="label">📊 IVA a pagar (SII)</div>
+        <div class="valor" id="ivaPagar">$0</div>
+      </div>
+      <div class="card">
+        <div class="label">📈 Margen bruto</div>
+        <div class="valor" id="margenBruto">$0</div>
+        <div class="ayuda">Ventas − Mercadería</div>
+      </div>
+      <div class="card" id="cardGanancia">
+        <div class="label">✅ Ganancia real</div>
+        <div class="valor" id="ganancia">$0</div>
+        <div class="ayuda">Margen − Gastos</div>
+      </div>
+    </div>
+
+    <!-- ESTADO EN LENGUAJE SIMPLE -->
+    <div class="estado" id="estado">
+      <div class="emoji">😊</div>
+      <div class="mensaje">Registra tu primera venta para empezar</div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab venta active" onclick="cambiarTab('venta')">🟢 VENDÍ</button>
+      <button class="tab" onclick="cambiarTab('compra')">🔴 COMPRÉ / GASTÉ</button>
+    </div>
+
+    <!-- FORMULARIO VENTA -->
+    <div class="formulario" id="formVenta">
+      <h3>Registrar una venta</h3>
+      <div class="campo">
+        <label>¿Qué vendiste?</label>
+        <input type="text" id="descVenta" placeholder="Ej: 2 bebidas, 1 pan amasado...">
+        <div class="ayuda">Escribe con tus palabras, no necesitas códigos</div>
+      </div>
+      <div class="campo">
+        <label>¿Cuánto te pagaron en total?</label>
+        <input type="number" id="montoVenta" placeholder="Ej: 5000" min="0">
+        <div class="ayuda">El monto final que recibiste (con IVA incluido)</div>
+      </div>
+      <div class="campo">
+        <label>¿Cómo te pagaron?</label>
+        <select id="pagoVenta">
+          <option value="efectivo">💵 Efectivo</option>
+          <option value="debito">💳 Débito / Transferencia</option>
+          <option value="credito">📝 Crédito (me deben)</option>
+        </select>
+      </div>
+      <button class="btn btn-venta" onclick="registrarVenta()">✓ Registrar venta</button>
+    </div>
+
+    <!-- FORMULARIO COMPRA / GASTO -->
+    <div class="formulario" id="formCompra" style="display:none">
+      <h3>Registrar una compra o gasto</h3>
+
+      <div class="campo">
+        <label>¿Qué tipo de movimiento es?</label>
+        <select id="tipoCompra">
+          <option value="mercaderia">🛒 Mercadería (para revender)</option>
+          <option value="gasto">💡 Gasto del local (arriendo, luz, sueldos)</option>
+        </select>
+        <div class="ayuda">La mercadería se resta de las ventas. Los gastos van aparte.</div>
+      </div>
+
+      <div class="campo">
+        <label>¿Qué compraste o pagaste?</label>
+        <input type="text" id="descCompra" placeholder="Ej: caja de bebidas, arriendo octubre...">
+      </div>
+
+      <div class="campo">
+        <label>¿Cuánto pagaste en total?</label>
+        <input type="number" id="montoCompra" placeholder="Ej: 3000" min="0">
+        <div class="ayuda">Monto final pagado (con IVA incluido)</div>
+      </div>
+
+      <div class="campo">
+        <label>¿Tienes factura o boleta?</label>
+        <select id="docCompra">
+          <option value="factura">📄 Factura (da crédito IVA)</option>
+          <option value="boleta">🧾 Boleta (no da crédito)</option>
+        </select>
+        <div class="ayuda">Si tienes factura, el SII te devuelve el IVA</div>
+      </div>
+
+      <button class="btn btn-compra" onclick="registrarCompra()">✓ Registrar</button>
+    </div>
+
+    <!-- LISTA DE MOVIMIENTOS -->
+    <div class="lista">
+      <h3>📋 Últimos movimientos</h3>
+      <div id="listaMovimientos">
+        <div class="vacio">Aquí verás tus ventas y compras</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTONES INFERIORES -->
+  <div class="footer-acciones">
+    <button class="btn btn-secundario" onclick="exportarDatos()">📥 Respaldar</button>
+    <button class="btn btn-secundario" onclick="borrarMes()">🗑️ Borrar todo</button>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

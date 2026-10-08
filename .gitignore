@@ -1,0 +1,6 @@
+.DS_Store
+Thumbs.db
+*.json
+!package.json
+.vscode/
+node_modules/
