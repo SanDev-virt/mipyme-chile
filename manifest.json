@@ -1,0 +1,26 @@
+{
+  "name": "MiPyme Chile",
+  "short_name": "MiPyme",
+  "description": "Registra tus compras y ventas sin saber contabilidad",
+  "start_url": "/mipyme-chile/",
+  "scope": "/mipyme-chile/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f0f4f8",
+  "theme_color": "#0039a6",
+  "lang": "es-CL",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

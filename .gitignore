@@ -1,6 +1,12 @@
+# Archivos del sistema
 .DS_Store
 Thumbs.db
-*.json
-!package.json
+
+# Respaldos locales (solo los que exporta la app)
+mipyme-respaldo-*.json
+
+# Carpeta de VS Code
 .vscode/
+
+# Node (por si luego agregas)
 node_modules/
