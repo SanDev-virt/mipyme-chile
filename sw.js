@@ -3,17 +3,15 @@
 // Permite que la app funcione sin internet
 // ============================================================
 
-const CACHE_NAME = 'mipyme-v2';
+const CACHE_NAME = 'mipyme-v3';
 const URLS_TO_CACHE = [
   '/mipyme-chile/',
   '/mipyme-chile/index.html',
   '/mipyme-chile/styles.css',
   '/mipyme-chile/script.js',
   '/mipyme-chile/manifest.json',
-  '/mipyme-chile/icons/icon.svg',
-  '/mipyme-chile/icons/icon-maskable.svg',
-  '/mipyme-chile/icons/icon-192.png',
-  '/mipyme-chile/icons/icon-512.png'
+  '/mipyme-chile/icons/icon-1024.png',
+  '/mipyme-chile/icons/icon-maskable-1024.png'
 ];
 
 // Instalar: guarda los archivos en caché
