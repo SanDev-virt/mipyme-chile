@@ -269,9 +269,14 @@ header p {
   padding: 12px;
   box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
   display: flex;
-  gap: 8px;
+  gap: 6px;
   max-width: 900px;
   margin: 0 auto;
+}
+
+.footer-acciones .btn-secundario {
+  padding: 10px 8px;
+  font-size: 0.78rem;
 }
 
 /* ---------- TOAST (notificaciones) ---------- */
