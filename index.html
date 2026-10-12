@@ -151,8 +151,40 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('✅ Service Worker registrado:', reg.scope))
+        .then(reg => {
+          console.log('✅ Service Worker registrado:', reg.scope);
+
+          // Verificar actualizaciones cada 30 segundos
+          setInterval(() => reg.update(), 30000);
+
+          // Detectar cuando hay una versión nueva
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (!newWorker) return;
+
+            newWorker.addEventListener('statechange', () => {
+              // Hay nueva versión lista, pero hay una activa
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                const actualizar = confirm(
+                  '🔄 Hay una nueva versión de MiPyme disponible.\n\n¿Actualizar ahora?'
+                );
+                if (actualizar) {
+                  newWorker.postMessage('SKIP_WAITING');
+                }
+              }
+            });
+          });
+        })
         .catch(err => console.log('❌ Error SW:', err));
+
+      // Cuando el SW cambie de control, recargar la página
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
+      });
     });
   }
 </script>

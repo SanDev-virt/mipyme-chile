@@ -1,9 +1,10 @@
 // ============================================================
 // Service Worker - MiPyme Chile
-// Permite que la app funcione sin internet
+// Con actualización automática
 // ============================================================
 
-const CACHE_NAME = 'mipyme-v3';
+const CACHE_NAME = 'mipyme-v5'; // ⬅️ Súbelo cada vez que hagas cambios grandes
+
 const URLS_TO_CACHE = [
   '/mipyme-chile/',
   '/mipyme-chile/index.html',
@@ -14,31 +15,65 @@ const URLS_TO_CACHE = [
   '/mipyme-chile/icons/icon-maskable-1024.png'
 ];
 
-// Instalar: guarda los archivos en caché
+// ---------- INSTALL ----------
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(URLS_TO_CACHE))
-      .then(() => self.skipWaiting())
+      .then(() => self.skipWaiting()) // Activa inmediatamente
   );
 });
 
-// Activar: limpia cachés viejas
+// ---------- ACTIVATE ----------
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => {
       return Promise.all(
-        keys.filter(k => k !== CACHE_NAME)
-            .map(k => caches.delete(k))
+        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
       );
     }).then(() => self.clients.claim())
   );
 });
 
-// Fetch: responde desde caché, si no hay, va a la red
+// ---------- FETCH ----------
+// Estrategia:
+//   - HTML/JS/CSS/JSON → network first (siempre lo más nuevo)
+//   - Imágenes → cache first (más rápido)
 self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+
+  // Ignorar peticiones que no son del mismo origen
+  if (url.origin !== self.location.origin) return;
+
+  const esCodigo =
+    event.request.destination === 'document' ||
+    event.request.destination === 'script' ||
+    event.request.destination === 'style' ||
+    url.pathname.endsWith('.json');
+
+  if (esCodigo) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Imágenes u otros: caché primero
   event.respondWith(
     caches.match(event.request)
       .then(response => response || fetch(event.request))
   );
+});
+
+// ---------- MENSAJE DESDE LA APP ----------
+self.addEventListener('message', event => {
+  if (event.data === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
