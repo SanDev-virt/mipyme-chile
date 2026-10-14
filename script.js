@@ -405,13 +405,15 @@ function exportarCSV() {
   lineas.push(`"IVA a pagar al SII";${Math.round(ivaPagar)}`);
 
   // Unir todo con saltos de línea
-  const contenidoCSV = lineas.join('\n');
+  const contenidoCSV = lineas.join('\r\n'); // ⬅️ Windows usa \r\n
 
-  // Agregar BOM para que Excel reconozca UTF-8 (tildes, ñ, etc.)
-  const BOM = '\uFEFF';
-  const blob = new Blob([BOM + contenidoCSV], { type: 'text/csv;charset=utf-8;' });
+  // Crear el blob SIN BOM explícito
+  // (usar el type correcto hace que Excel/Sheets detecten UTF-8 automáticamente)
+  const blob = new Blob([contenidoCSV], { 
+    type: 'text/csv;charset=utf-8;' 
+  });
 
-  // Nombre del archivo
+    // Nombre del archivo
   const mes = String(ahora.getMonth() + 1).padStart(2, '0');
   const anio = ahora.getFullYear();
   const nombreArchivo = `MiPyme-Reporte-${anio}-${mes}.csv`;
@@ -425,7 +427,6 @@ function exportarCSV() {
   URL.revokeObjectURL(url);
 
   mostrarToast('📊 Reporte descargado: ' + nombreArchivo);
-  lineas.push(`"Ganancia antes de IVA";${Math.round(margenBruto - totalGastos)}`);
 }
 // ============================================================
 // INICIO
