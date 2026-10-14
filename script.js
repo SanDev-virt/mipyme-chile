@@ -284,12 +284,22 @@ function borrarMes() {
  * Genera un archivo CSV con todos los movimientos del mes actual
  * Formato compatible con Excel chileno (separador ; y decimales con coma)
  */
+// ============================================================
+// EXPORTAR A EXCEL (.xlsx) — Reporte para el contador
+// ============================================================
+
 function exportarCSV() {
+  // Verificar que SheetJS está cargado
+  if (typeof XLSX === 'undefined') {
+    mostrarToast('Error: no se cargó la librería Excel', 'error');
+    return;
+  }
+
   const ahora = new Date();
   const mesActual = ahora.getMonth();
   const anioActual = ahora.getFullYear();
 
-  // Filtrar solo movimientos del mes actual
+  // Filtrar movimientos del mes actual
   const delMes = movimientos.filter(m => {
     const f = new Date(m.fecha);
     return f.getMonth() === mesActual && f.getFullYear() === anioActual;
@@ -300,23 +310,10 @@ function exportarCSV() {
     return;
   }
 
-  // Encabezados del CSV
-  const encabezados = [
-    'Fecha',
-    'Tipo',
-    'Categoría',
-    'Descripción',
-    'Monto Total',
-    'Neto',
-    'IVA',
-    'Forma de Pago / Documento'
-  ];
-
-  // Ordenar por fecha (más antiguo primero, como un libro contable)
+  // ---------- HOJA 1: Movimientos del mes ----------
   const ordenados = [...delMes].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
 
-  // Procesar cada movimiento
-  const filas = ordenados.map(m => {
+  const datos = ordenados.map(m => {
     const fecha = new Date(m.fecha);
     const fechaStr = fecha.toLocaleDateString('es-CL', {
       day: '2-digit',
@@ -333,19 +330,34 @@ function exportarCSV() {
       ? (m.pago || '')
       : (m.doc || '');
 
-    return [
-      fechaStr,
-      tipo,
-      categoria,
-      m.desc,
-      m.monto,
-      m.neto,
-      m.iva,
-      metodo
-    ];
+    return {
+      'Fecha': fechaStr,
+      'Tipo': tipo,
+      'Categoría': categoria,
+      'Descripción': m.desc,
+      'Monto Total': Math.round(m.monto),
+      'Neto': Math.round(m.neto),
+      'IVA': Math.round(m.iva),
+      'Forma de Pago / Documento': metodo
+    };
   });
 
-  // Calcular totales
+  // Crear hoja con los datos
+  const hojaMovimientos = XLSX.utils.json_to_sheet(datos);
+
+  // Ancho de columnas
+  hojaMovimientos['!cols'] = [
+    { wch: 12 },  // Fecha
+    { wch: 10 },  // Tipo
+    { wch: 18 },  // Categoría
+    { wch: 30 },  // Descripción
+    { wch: 14 },  // Monto Total
+    { wch: 14 },  // Neto
+    { wch: 12 },  // IVA
+    { wch: 22 }   // Forma de Pago
+  ];
+
+  // ---------- HOJA 2: Resumen del mes ----------
   let totalVentas = 0, totalMercaderia = 0, totalGastos = 0;
   let ivaDebito = 0, ivaCredito = 0;
 
@@ -364,67 +376,40 @@ function exportarCSV() {
 
   const margenBruto = totalVentas - totalMercaderia;
   const ivaPagar = Math.max(0, ivaDebito - ivaCredito);
-  const gananciaReal = margenBruto - totalGastos - ivaPagar; // ⬅️ IVA descontado
+  const gananciaAntesIVA = margenBruto - totalGastos;
+  const gananciaReal = gananciaAntesIVA - ivaPagar;
 
-  // Construir el CSV
-  const lineas = [];
+  const resumen = [
+    { 'Concepto': 'Ventas totales', 'Monto': Math.round(totalVentas) },
+    { 'Concepto': 'Mercadería comprada', 'Monto': Math.round(totalMercaderia) },
+    { 'Concepto': 'Gastos del local', 'Monto': Math.round(totalGastos) },
+    { 'Concepto': 'Margen bruto', 'Monto': Math.round(margenBruto) },
+    { 'Concepto': 'Ganancia antes de IVA', 'Monto': Math.round(gananciaAntesIVA) },
+    { 'Concepto': 'IVA débito (ventas)', 'Monto': Math.round(ivaDebito) },
+    { 'Concepto': 'IVA crédito (compras con factura)', 'Monto': Math.round(ivaCredito) },
+    { 'Concepto': 'IVA a pagar al SII', 'Monto': Math.round(ivaPagar) },
+    { 'Concepto': 'Ganancia real (después de IVA)', 'Monto': Math.round(gananciaReal) }
+  ];
 
-  // Título del reporte
-  const nombreMes = ahora.toLocaleDateString('es-CL', { month: 'long', year: 'numeric' });
-  lineas.push(`"Reporte MiPyme Chile - ${nombreMes.toUpperCase()}"`);
-  lineas.push('');
+  const hojaResumen = XLSX.utils.json_to_sheet(resumen);
 
-  // Encabezados
-  lineas.push(encabezados.map(h => `"${h}"`).join(';'));
+  hojaResumen['!cols'] = [
+    { wch: 40 },
+    { wch: 18 }
+  ];
 
-  // Filas
-  filas.forEach(fila => {
-    const filaFormateada = fila.map((valor, i) => {
-      // Los montos (índices 4, 5, 6) van sin comillas para que Excel los reconozca como números
-      if (i >= 4 && i <= 6) {
-        return Math.round(valor); // Entero, sin decimales (CLP no usa centavos)
-      }
-      // El resto va entre comillas (texto)
-      return `"${valor}"`;
-    });
-    lineas.push(filaFormateada.join(';'));
-  });
+  // ---------- Crear el libro con 2 hojas ----------
+  const libro = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(libro, hojaMovimientos, 'Movimientos');
+  XLSX.utils.book_append_sheet(libro, hojaResumen, 'Resumen');
 
-  // Línea vacía antes del resumen
-  lineas.push('');
-
-  // RESUMEN FINAL
-  lineas.push('"RESUMEN DEL MES"');
-  lineas.push(`"Ventas totales";${Math.round(totalVentas)}`);
-  lineas.push(`"Mercadería comprada";${Math.round(totalMercaderia)}`);
-  lineas.push(`"Gastos del local";${Math.round(totalGastos)}`);
-  lineas.push(`"Margen bruto";${Math.round(margenBruto)}`);
-  lineas.push(`"Ganancia real";${Math.round(gananciaReal)}`);
-  lineas.push(`"IVA débito (ventas)";${Math.round(ivaDebito)}`);
-  lineas.push(`"IVA crédito (compras con factura)";${Math.round(ivaCredito)}`);
-  lineas.push(`"IVA a pagar al SII";${Math.round(ivaPagar)}`);
-
-  // Unir todo con saltos de línea
-  const contenidoCSV = lineas.join('\r\n'); // ⬅️ Windows usa \r\n
-
-  // Crear el blob SIN BOM explícito
-  // (usar el type correcto hace que Excel/Sheets detecten UTF-8 automáticamente)
-  const blob = new Blob([contenidoCSV], { 
-    type: 'text/csv;charset=utf-8;' 
-  });
-
-    // Nombre del archivo
+  // ---------- Nombre del archivo ----------
   const mes = String(ahora.getMonth() + 1).padStart(2, '0');
   const anio = ahora.getFullYear();
-  const nombreArchivo = `MiPyme-Reporte-${anio}-${mes}.csv`;
+  const nombreArchivo = `MiPyme-Reporte-${anio}-${mes}.xlsx`;
 
-  // Descargar
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = nombreArchivo;
-  a.click();
-  URL.revokeObjectURL(url);
+  // ---------- Descargar ----------
+  XLSX.writeFile(libro, nombreArchivo);
 
   mostrarToast('📊 Reporte descargado: ' + nombreArchivo);
 }

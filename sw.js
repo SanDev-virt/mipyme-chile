@@ -9,6 +9,7 @@ const URLS_TO_CACHE = [
   '/mipyme-chile/index.html',
   '/mipyme-chile/styles.css',
   '/mipyme-chile/script.js',
+  '/mipyme-chile/xlsx.full.min.js',   // ⬅️ NUEVO
   '/mipyme-chile/manifest.json',
   '/mipyme-chile/icons/icon-1024.png',
   '/mipyme-chile/icons/icon-maskable-1024.png'
