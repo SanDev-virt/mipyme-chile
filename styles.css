@@ -38,7 +38,13 @@ header p {
   margin: 20px auto;
   padding: 0 16px;
 }
-
+/* ---------- PESTAÑAS (ahora arriba) ---------- */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  margin-top: 4px;
+}
 /* ---------- TARJETAS DE RESUMEN ---------- */
 .resumen {
   display: grid;
@@ -299,3 +305,19 @@ header p {
 
 .toast.exito { background: #16a34a; }
 .toast.error { background: #dc2626; }
+
+/* ---------- Ajuste de las 6 tarjetas del resumen ---------- */
+.resumen {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+#cardGanancia {
+  border-left-color: #16a34a;
+  grid-column: span 2;
+}
+
+@media (max-width: 600px) {
+  #cardGanancia {
+    grid-column: span 1;
+  }
+}

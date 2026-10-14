@@ -135,7 +135,6 @@ function guardar() {
 // ============================================================
 // ACTUALIZAR PANTALLA
 // ============================================================
-
 function actualizar() {
   const ahora = new Date();
   const mesActual = ahora.getMonth();
@@ -157,7 +156,6 @@ function actualizar() {
       ventas += m.monto;
       ivaDebito += m.iva;
     } else {
-      // Compras antiguas sin categoría → mercadería por defecto
       if (m.categoria === 'gasto') {
         gastos += m.monto;
       } else {
@@ -167,17 +165,18 @@ function actualizar() {
     }
   });
 
-  // Cálculos correctos
+  // Cálculos
   const margenBruto = ventas - mercaderia;
-  const gananciaReal = margenBruto - gastos;
   const ivaPagar = Math.max(0, ivaDebito - ivaCredito);
+  const gananciaAntesIVA = margenBruto - gastos;
+  const gananciaReal = gananciaAntesIVA - ivaPagar; // ⬅️ IVA descontado
 
   // Actualizar tarjetas
   document.getElementById('totalVentas').textContent = formatearCLP(ventas);
   document.getElementById('totalCompras').textContent = formatearCLP(mercaderia);
   document.getElementById('totalGastos').textContent = formatearCLP(gastos);
-  document.getElementById('ivaPagar').textContent = formatearCLP(ivaPagar);
   document.getElementById('margenBruto').textContent = formatearCLP(margenBruto);
+  document.getElementById('ivaPagar').textContent = formatearCLP(ivaPagar);
   document.getElementById('ganancia').textContent = formatearCLP(gananciaReal);
 
   // Estado emocional
@@ -196,7 +195,7 @@ function actualizar() {
     mensaje.textContent = `Ganas ${formatearCLP(gananciaReal)} pero vendes bajo costo. Revisa precios.`;
   } else if (gananciaReal <= 0 && margenBruto > 0) {
     emoji.textContent = '😐';
-    mensaje.textContent = `Margen OK, pero los gastos (${formatearCLP(gastos)}) se comen la ganancia.`;
+    mensaje.textContent = `Margen OK, pero gastos (${formatearCLP(gastos)}) e IVA (${formatearCLP(ivaPagar)}) se comen la ganancia.`;
   } else {
     emoji.textContent = '😟';
     mensaje.textContent = `Pierdes ${formatearCLP(Math.abs(gananciaReal))}. Revisa precios y gastos.`;
@@ -205,7 +204,6 @@ function actualizar() {
   // Lista de movimientos
   renderizarLista();
 }
-
 function renderizarLista() {
   const lista = document.getElementById('listaMovimientos');
 
@@ -365,8 +363,8 @@ function exportarCSV() {
   });
 
   const margenBruto = totalVentas - totalMercaderia;
-  const gananciaReal = margenBruto - totalGastos;
   const ivaPagar = Math.max(0, ivaDebito - ivaCredito);
+  const gananciaReal = margenBruto - totalGastos - ivaPagar; // ⬅️ IVA descontado
 
   // Construir el CSV
   const lineas = [];
@@ -427,8 +425,8 @@ function exportarCSV() {
   URL.revokeObjectURL(url);
 
   mostrarToast('📊 Reporte descargado: ' + nombreArchivo);
+  lineas.push(`"Ganancia antes de IVA";${Math.round(margenBruto - totalGastos)}`);
 }
-
 // ============================================================
 // INICIO
 // ============================================================

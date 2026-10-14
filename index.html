@@ -4,15 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MiPyme Chile - Compras y Ventas fácil</title>
+
   <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0039a6">
-<link rel="apple-touch-icon" href="icons/icon-1024.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="MiPyme">
-<link rel="icon" type="image/png" href="icons/icon-1024.png" sizes="1024x1024">
-<link rel="stylesheet" href="styles.css">
+  <meta name="theme-color" content="#0039a6">
+  <link rel="apple-touch-icon" href="icons/icon-1024.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MiPyme">
+  <link rel="icon" type="image/png" href="icons/icon-1024.png" sizes="1024x1024">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -23,43 +24,7 @@
 
   <div class="container">
 
-    <!-- RESUMEN -->
-    <div class="resumen">
-      <div class="card verde">
-        <div class="label">💰 Ventas del mes</div>
-        <div class="valor" id="totalVentas">$0</div>
-      </div>
-      <div class="card rojo">
-        <div class="label">🛒 Mercadería comprada</div>
-        <div class="valor" id="totalCompras">$0</div>
-      </div>
-      <div class="card rojo">
-        <div class="label">💡 Gastos del mes</div>
-        <div class="valor" id="totalGastos">$0</div>
-      </div>
-      <div class="card amarillo">
-        <div class="label">📊 IVA a pagar (SII)</div>
-        <div class="valor" id="ivaPagar">$0</div>
-      </div>
-      <div class="card">
-        <div class="label">📈 Margen bruto</div>
-        <div class="valor" id="margenBruto">$0</div>
-        <div class="ayuda">Ventas − Mercadería</div>
-      </div>
-      <div class="card" id="cardGanancia">
-        <div class="label">✅ Ganancia real</div>
-        <div class="valor" id="ganancia">$0</div>
-        <div class="ayuda">Margen − Gastos</div>
-      </div>
-    </div>
-
-    <!-- ESTADO EN LENGUAJE SIMPLE -->
-    <div class="estado" id="estado">
-      <div class="emoji">😊</div>
-      <div class="mensaje">Registra tu primera venta para empezar</div>
-    </div>
-
-    <!-- TABS -->
+    <!-- TABS (AHORA PRIMERO) -->
     <div class="tabs">
       <button class="tab venta active" onclick="cambiarTab('venta')">🟢 VENDÍ</button>
       <button class="tab" onclick="cambiarTab('compra')">🔴 COMPRÉ / GASTÉ</button>
@@ -125,6 +90,43 @@
       <button class="btn btn-compra" onclick="registrarCompra()">✓ Registrar</button>
     </div>
 
+    <!-- ESTADO EMOCIONAL -->
+    <div class="estado" id="estado">
+      <div class="emoji">😊</div>
+      <div class="mensaje">Registra tu primera venta para empezar</div>
+    </div>
+
+    <!-- RESUMEN -->
+    <div class="resumen">
+      <div class="card verde">
+        <div class="label">💰 Ventas del mes</div>
+        <div class="valor" id="totalVentas">$0</div>
+      </div>
+      <div class="card rojo">
+        <div class="label">🛒 Mercadería comprada</div>
+        <div class="valor" id="totalCompras">$0</div>
+      </div>
+      <div class="card rojo">
+        <div class="label">💡 Gastos del mes</div>
+        <div class="valor" id="totalGastos">$0</div>
+      </div>
+      <div class="card">
+        <div class="label">📈 Margen bruto</div>
+        <div class="valor" id="margenBruto">$0</div>
+        <div class="ayuda">Ventas − Mercadería</div>
+      </div>
+      <div class="card amarillo">
+        <div class="label">📊 IVA a pagar (SII)</div>
+        <div class="valor" id="ivaPagar">$0</div>
+        <div class="ayuda">Se descuenta de la ganancia</div>
+      </div>
+      <div class="card" id="cardGanancia">
+        <div class="label">✅ Ganancia real (después de IVA)</div>
+        <div class="valor" id="ganancia">$0</div>
+        <div class="ayuda">Margen − Gastos − IVA</div>
+      </div>
+    </div>
+
     <!-- LISTA DE MOVIMIENTOS -->
     <div class="lista">
       <h3>📋 Últimos movimientos</h3>
@@ -146,48 +148,39 @@
   <div class="toast" id="toast"></div>
 
   <script src="script.js"></script>
+
   <script>
-  // Registro del Service Worker para PWA
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => {
-          console.log('✅ Service Worker registrado:', reg.scope);
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => {
+            console.log('✅ Service Worker registrado:', reg.scope);
+            setInterval(() => reg.update(), 30000);
 
-          // Verificar actualizaciones cada 30 segundos
-          setInterval(() => reg.update(), 30000);
-
-          // Detectar cuando hay una versión nueva
-          reg.addEventListener('updatefound', () => {
-            const newWorker = reg.installing;
-            if (!newWorker) return;
-
-            newWorker.addEventListener('statechange', () => {
-              // Hay nueva versión lista, pero hay una activa
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                const actualizar = confirm(
-                  '🔄 Hay una nueva versión de MiPyme disponible.\n\n¿Actualizar ahora?'
-                );
-                if (actualizar) {
-                  newWorker.postMessage('SKIP_WAITING');
+            reg.addEventListener('updatefound', () => {
+              const newWorker = reg.installing;
+              if (!newWorker) return;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  const actualizar = confirm(
+                    '🔄 Hay una nueva versión de MiPyme disponible.\n\n¿Actualizar ahora?'
+                  );
+                  if (actualizar) newWorker.postMessage('SKIP_WAITING');
                 }
-              }
+              });
             });
-          });
-        })
-        .catch(err => console.log('❌ Error SW:', err));
+          })
+          .catch(err => console.log('❌ Error SW:', err));
 
-      // Cuando el SW cambie de control, recargar la página
-      let refreshing = false;
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refreshing) {
-          refreshing = true;
-          window.location.reload();
-        }
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+          }
+        });
       });
-    });
-  }
-</script>
-
+    }
+  </script>
 </body>
 </html>
