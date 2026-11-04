@@ -3,7 +3,7 @@
 // Con actualización automática
 // ============================================================
 
-const CACHE_NAME = 'mipyme-v6'; // antes v5
+const CACHE_NAME = 'mipyme-v7'; // Subimos de v6 a v7
 const URLS_TO_CACHE = [
   '/mipyme-chile/',
   '/mipyme-chile/index.html',
